@@ -1,0 +1,11 @@
+---
+manifest_version: "1"
+name: reactions-test
+uuid: 00000000-0000-0000-0000-000000000000
+properties: ~
+zomes:
+  - name: reactions
+    bundled: ../../target/wasm32-unknown-unknown/release/hc_zome_reactions.wasm
+
+  - name: profiles
+    bundled: ../../target/wasm32-unknown-unknown/release/profiles.wasm
