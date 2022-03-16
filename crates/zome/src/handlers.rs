@@ -5,10 +5,18 @@ use std::convert::TryInto;
 
 // +++ Remark: moved struct definitions to ""../../types/src/lib.rs" as intended by the template
 
-pub fn react(input: ReactionInput) -> ExternResult<HeaderHashB64> {
+pub fn react(input: ReactionInput) -> ExternResult<ReactionDetails> {
     let agent_pubkey = agent_info()?.agent_initial_pubkey;
-    let header_hash = create_link(input.react_on.clone().into(), agent_pubkey.into(), LinkTag::new(input.reaction))?;
-    Ok(header_hash.into())
+    let header_hash = create_link(input.react_on.clone().into(), agent_pubkey.clone().into(), LinkTag::new(input.reaction.clone()))?;
+    let time = sys_time()?;
+
+    let reaction_details = ReactionDetails {
+        author: agent_pubkey.into(),
+        reaction: input.reaction,
+        timestamp: time,
+        create_link_hash: header_hash.into(),
+    };
+    Ok(reaction_details)
 }
 
 

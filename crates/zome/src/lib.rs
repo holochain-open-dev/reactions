@@ -11,7 +11,6 @@ use hdk::prelude::holo_hash::{ HeaderHashB64, EntryHashB64};
 use hdk::prelude::*;
 
 mod handlers;
-mod utils;
 
 use hc_zome_reactions_types::*;
 
@@ -20,7 +19,7 @@ entry_defs![PathEntry::entry_def()];
 // Creates a link from the entry to react on to the AgentPubKey of the agent that reacts
 // with a linktag containing the reaction as a string
 #[hdk_extern]
-pub fn react(input: ReactionInput) -> ExternResult<HeaderHashB64> {
+pub fn react(input: ReactionInput) -> ExternResult<ReactionDetails> {
     handlers::react(input)
 }
 
