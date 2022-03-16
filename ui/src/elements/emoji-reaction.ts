@@ -60,16 +60,6 @@ export class EmojiReaction extends LitElement {
         };
     }
 
-    // static get scopedElements() {
-    //     return {
-    //       'mwc-textfield': TextField,
-    //       'mwc-button': Button,
-    //       'mwc-fab': Fab,
-    //       'mwc-icon-button': IconButton,
-    //       'sl-avatar': SlAvatar,
-    //     };
-    //   }
-
     static styles = css`
     .hidden {
         display:none;
