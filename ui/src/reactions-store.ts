@@ -1,7 +1,6 @@
 import { CellClient } from '@holochain-open-dev/cell-client';
 import {
   AgentPubKeyB64,
-  Dictionary,
   EntryHashB64,
   serializeHash,
 } from '@holochain-open-dev/core-types';
@@ -9,7 +8,7 @@ import merge from 'lodash-es/merge';
 
 import { ReactionsService } from './reactions-service';
 import { ReactionDetails, ReactionInput } from './types';
-import { writable, Writable, derived, Readable, get } from 'svelte/store';
+import { writable, Writable, derived, Readable } from 'svelte/store';
 import { defaultConfig, ReactionsConfig } from './config';
 
 export class ReactionsStore {
@@ -34,7 +33,7 @@ export class ReactionsStore {
   /** Readable stores */
 
   // Returns a store with the reaction of the given agent
-  reactionForEntry(entryHash: EntryHashB64): Readable<Array<ReactionDetails>> {
+  reactionsForEntry(entryHash: EntryHashB64): Readable<Array<ReactionDetails>> {
     return derived(this._knownReactionsStore, reactions => reactions[entryHash]);
   }
 
@@ -72,7 +71,7 @@ export class ReactionsStore {
    *
    * Note that there is no guarantee on nickname uniqness
    *
-   * @param reaction reaction to be created
+   * @param input input for the reaction to be created
    */
   async react(input: ReactionInput): Promise<void> {
     const reaction: ReactionDetails = await this._service.react(input); //zome call
