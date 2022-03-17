@@ -77,7 +77,11 @@ export class ReactionsStore {
     const reaction: ReactionDetails = await this._service.react(input); //zome call
 
     this._knownReactionsStore.update(reactions => {
-      reactions[input.reactOn].push(reaction);
+      if (reactions[input.reactOn]) { // add new reaction to list of reactions of this entryHash
+        reactions[input.reactOn].push(reaction);
+      } else { // or create new list of reactions for this entryHash if it's the first reaction
+        reactions[input.reactOn] = [reaction];
+      }
       return reactions;
     });
   }

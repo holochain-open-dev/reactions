@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import { EntryHashB64 } from "@holochain-open-dev/core-types";
-import { IconButton } from '@material/mwc-icon-button';
+import { Icon } from '@material/mwc-icon';
 
 import 'emoji-picker-element';
 import { ReactionsStore } from "../reactions-store";
@@ -11,8 +11,8 @@ import { contextProvided } from "@holochain-open-dev/context";
 import { reactionsStoreContext } from "../context";
 
 
-@customElement('emoji-reactions')
-export class EmojiReaction extends LitElement {
+@customElement('choosable-emoji-reaction')
+export class ChoosableEmojiReaction extends LitElement {
 
     @property({ type: String })
     entryHash!: EntryHashB64;
@@ -31,7 +31,6 @@ export class EmojiReaction extends LitElement {
     }
 
     private _emojiReaction(e: CustomEvent) {
-        debugger;
         const reaction: string = e.detail.unicode;
         let reactionInput: ReactionInput = {
             reaction: reaction,
@@ -47,7 +46,7 @@ export class EmojiReaction extends LitElement {
         // console.log((this.show? 'shown' : ''));
 
         return html`
-            <mwc-icon-button icon="add_reaction" @click=${this._togglePicker}></mwc-icon-button>
+            <mwc-icon class="add-reaction" @click=${this._togglePicker} aria-label="Add reaction" style="--mdc-icon-size: 38px;">add_reaction</mwc-icon>
             <div class="tooltip" role="tooltip" class=${this.showPalette? '' : 'hidden'}>
                 <emoji-picker @emoji-click=${this._emojiReaction}></emoji-picker>
             </div>
@@ -56,7 +55,7 @@ export class EmojiReaction extends LitElement {
 
     static get scopedElements() {
         return {
-            'mwc-icon-button': IconButton
+            'mwc-icon': Icon
         };
     }
 
@@ -64,7 +63,16 @@ export class EmojiReaction extends LitElement {
     .hidden {
         display:none;
     }
-`
+    .add-reaction {
+        color: rgb(140,140,140);
+        font-size: 24px;
+        cursor: pointer;
+        padding: 3px;
+    }
+    .add-reaction:hover {
+        color: rgb(40,40,40);
+    }
+    `
 }
 
 
