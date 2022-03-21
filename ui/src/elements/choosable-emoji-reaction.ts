@@ -2,13 +2,16 @@ import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import { EntryHashB64 } from "@holochain-open-dev/core-types";
+import { contextProvided } from "@holochain-open-dev/context";
+
 import { Icon } from '@material/mwc-icon';
 
 import 'emoji-picker-element';
+
 import { ReactionsStore } from "../reactions-store";
 import { ReactionInput } from "../types";
-import { contextProvided } from "@holochain-open-dev/context";
 import { reactionsStoreContext } from "../context";
+import { sharedStyles } from './utils/shared-styles';
 
 
 @customElement('choosable-emoji-reaction')
@@ -17,13 +20,13 @@ export class ChoosableEmojiReaction extends LitElement {
     @property({ type: String })
     entryHash!: EntryHashB64;
 
-    @state()
-    showPalette: boolean = false;
-
     @contextProvided({ context: reactionsStoreContext })
+
     @property({ type: Object })
     store!: ReactionsStore;
 
+    @state()
+    showPalette: boolean = false;
 
 
     private _togglePicker = () => {
@@ -59,7 +62,7 @@ export class ChoosableEmojiReaction extends LitElement {
         };
     }
 
-    static styles = css`
+    static localStyles = css`
     .hidden {
         display:none;
     }
@@ -73,6 +76,10 @@ export class ChoosableEmojiReaction extends LitElement {
         color: rgb(40,40,40);
     }
     `
+
+    static get styles() {
+        return [sharedStyles, this.localStyles];
+    }
 }
 
 

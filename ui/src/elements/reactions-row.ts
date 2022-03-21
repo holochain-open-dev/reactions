@@ -30,6 +30,7 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
     // private _loading: boolean = true;
 
     @contextProvided({ context: reactionsStoreContext })
+
     @property({ type: Object })
     store!: ReactionsStore;
 
@@ -78,7 +79,7 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
     }
 
     render() {
-
+        console.log(this._reactionsForEntry);
         let orderedReactions = this.groupReactions(this._reactionsForEntry.value);
 
         return html`
@@ -93,10 +94,10 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
     static localStyles = css`
         .reaction-count {
             background: rgb(0,0,0,0.1);
-            font-family: arial;
             padding: 3px 5px;
+            font-family: Roboto, sans-serif;
             font-size: 22px;
-            border-radius: 15px;
+            border-radius: 12px;
             cursor: pointer;
             margin: 0 2px;
         }
