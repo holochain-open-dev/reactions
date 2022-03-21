@@ -12,9 +12,19 @@ use hdk::prelude::*;
 
 mod handlers;
 
+// <---  part below may be removed when using this "reactions" as an external module --->
+mod dummy;
+use crate::dummy::DummyEntry;
+pub fn create_dummy_entry(dummy: DummyEntry) -> ExternResult<EntryHashB64> {
+    dummy::create_dummy_entry(dummy)
+}
+// <--- only used for UI demo (ui/demo/index.html) --->
+
+
 use hc_zome_reactions_types::*;
 
-entry_defs![PathEntry::entry_def()];
+entry_defs![PathEntry::entry_def(),
+DummyEntry::entry_def()]; // remove DummyEntry from entry_defs if you remove the part above as well
 
 // Creates a link from the entry to react on to the AgentPubKey of the agent that reacts
 // with a linktag containing the reaction as a string
@@ -34,3 +44,6 @@ pub fn unreact(header_hash: HeaderHashB64) -> ExternResult<HeaderHashB64> {
 pub fn get_reactions_for_entry(entry_hash: EntryHashB64) -> ExternResult<Vec<ReactionDetails>> {
     handlers::get_reactions_for_entry(entry_hash)
 }
+
+
+

@@ -27,12 +27,12 @@
           profilesStoreContext,
         } from '@holochain-open-dev/profiles';
 
-        import { EmojiReaction, ReactionsStore, reactionsStoreContext } from '../dist';
+        import { ChoosableEmojiReaction, ReactionsRow, ReactionsStore, reactionsStoreContext } from '../dist';
 
         import { ContextProvider } from '@holochain-open-dev/context';
         import { HolochainClient } from '@holochain-open-dev/cell-client';
         import { ScopedElementsMixin } from '@open-wc/scoped-elements';
-        import { LitElement, html } from 'lit';
+        import { LitElement, html, css } from 'lit';
 
         class ReactionsTestApp extends ScopedElementsMixin(LitElement) {
           static get properties() {
@@ -42,6 +42,7 @@
               },
             };
           }
+
 
           async firstUpdated() {
             const client = await HolochainClient.connect(
@@ -55,6 +56,16 @@
             const profilesStore = new ProfilesStore(cellClient);
             new ContextProvider(this, profilesStoreContext, profilesStore);
 
+            this.entryHash = await cellClient.callZome(
+            'reactions',
+            'create_dummy_entry',
+            'This dummy entry contains complete non-sense. It is solely for demo purposes.'
+            );
+
+            console.log("EntryHash after zome call in index.html: ", this.entryHash);
+            console.log("EntryHash type after zome call in index.html: ", typeof this.entryHash);
+
+
             new ContextProvider(
               this,
               reactionsStoreContext,
@@ -62,17 +73,38 @@
             );
             this.loaded = true;
           }
-
+          debugger;
           render() {
             if (!this.loaded) return html`<span>Loading...</span>`;
+            console.log("EntryHash before rendering in index.html:", this.entryHash);
             return html`
-              <emoji-reactions entryHash="[NO VALID ENTRY HASH YET]"></emoji-reactions>
-            `;
+              <div class="nonsense">This dummy entry contains complete non-sense. It is solely for demo purposes.</div>
+
+              <div class="row">
+                <reactions-row .entryHash=${this.entryHash}></reactions-row>
+                <choosable-emoji-reaction .entryHash=${this.entryHash}></choosable-emoji-reaction>
+              </div>
+              `;
           }
+
+          static styles = css`
+              .nonsense {
+                background: rgb(0,0,0,0.1);
+                border: 2px solid black;
+                border-radius: 10px;
+                max-width: 300px;
+                padding: 5px;
+                margin: 10px;
+              }
+              .row {
+                display: flex;
+              }
+          `
 
           static get scopedElements() {
             return {
-              'emoji-reactions': EmojiReaction
+              'choosable-emoji-reaction': ChoosableEmojiReaction,
+              'reactions-row': ReactionsRow,
             };
           }
         }

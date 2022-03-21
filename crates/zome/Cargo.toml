@@ -1,5 +1,5 @@
 [package]
-authors = ["guillem.cordoba@gmail.com", "eric@harris-braun.com", "tatsuya.g.sato@yumeville.com"]
+authors = ["matthme@protonmail.com", "guillem.cordoba@gmail.com"]
 description = "Reactions zome for any Holochain app"
 documentation = "https://holochain-open-dev.github.io/reactions"
 edition = "2018"
