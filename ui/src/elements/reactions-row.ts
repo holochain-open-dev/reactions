@@ -39,6 +39,7 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
     );
 
     async firstUpdated() {
+        console.log("I AM FIRST UPDATED");
         await this.store.fetchReactionsForEntry(this.entryHash);
         // this._loading = false;
       }
@@ -79,7 +80,10 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
     }
 
     render() {
+        console.log("I AM RENDERED");
+        console.log(this.store);
         console.log(this._reactionsForEntry);
+        console.log("+++ reactionsForEntry:", this.store?.reactionsForEntry(this.entryHash));
         let orderedReactions = this.groupReactions(this._reactionsForEntry.value);
 
         return html`
