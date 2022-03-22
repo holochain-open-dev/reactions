@@ -55,13 +55,13 @@
 
             const profilesStore = new ProfilesStore(cellClient);
             new ContextProvider(this, profilesStoreContext, profilesStore);
-
+            debugger;
             this.entryHash = await cellClient.callZome(
             'dummy',
             'create_dummy_entry',
             'This dummy entry contains complete non-sense. It is solely for demo purposes.'
             );
-
+            debugger;
             console.log("EntryHash after zome call in index.html: ", this.entryHash);
             console.log("EntryHash type after zome call in index.html: ", typeof this.entryHash);
 

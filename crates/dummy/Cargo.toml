@@ -1,10 +1,19 @@
 [package]
-name = "dummy"
-version = "0.0.1"
+authors = ["matthme@protonmail.com", "guillem.cordoba@gmail.com"]
+description = "Zome to create Dummy entries for demo and testing purposes"
+documentation = "https://holochain-open-dev.github.io/reactions"
 edition = "2018"
+license = "MIT"
+name = "hc_zome_dummy"
+repository = "https://github.com/holochain-open-dev/reactions"
+version = "0.0.1"
 
 [lib]
-name = "dummy"
-crate-type = [ "cdylib", "rlib" ]
+crate-type = ["cdylib", "rlib"]
+name = "hc_zome_dummy"
+
+[dependencies]
+derive_more = "0"
+serde = "1"
 
 hdk = {version = "0.0.121", features = ["encoding"]}
