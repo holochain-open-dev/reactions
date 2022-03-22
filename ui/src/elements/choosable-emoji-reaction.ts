@@ -80,7 +80,7 @@ export class ChoosableEmojiReaction extends LitElement {
 
     static get scopedElements() {
         return {
-            'mwc-icon': Icon
+            'mwc-icon': Icon,
         };
     }
 

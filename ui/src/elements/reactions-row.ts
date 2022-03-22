@@ -96,9 +96,6 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
     }
 
     render() {
-        console.log("I am rendered");
-        console.log("loading: ", this._loading);
-        console.log(this._reactionsForEntry.value);
         if (this._loading) {
             return html``
         }

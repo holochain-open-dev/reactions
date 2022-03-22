@@ -82,7 +82,7 @@ export class ReactionsStore {
     const getReactionsInput: GetReactionsForEntryInput = {
       entryHash: entryHash,
     }
-    console.log(getReactionsInput, typeof getReactionsInput, typeof getReactionsInput.entryHash);
+
     const allReactions = await this._service.getReactionsForEntry(getReactionsInput);
 
     this._knownReactionsStore.update(reactions => {
@@ -120,7 +120,6 @@ export class ReactionsStore {
   async unreact(input: ReactionInput): Promise<void> {
 
     const unreaction: UnreactionDetails = await(this._service.unreact(input)); // zome call
-    console.log("unreaction: ", unreaction);
 
     this._knownReactionsStore.update(reactions => {
       reactions[input.reactOn] = reactions[input.reactOn].filter((r) =>
