@@ -6,8 +6,8 @@
 //!
 //! Read about how to include both this zome and its frontend module in your application [here](https://holochain-open-dev.github.io/reactions).
 
-use crate::{ ReactionDetails, ReactionInput};
-use hdk::prelude::holo_hash::{ HeaderHashB64, EntryHashB64};
+use crate::{ ReactionDetails, ReactionInput, UnreactionDetails, GetReactionsForEntryInput };
+use hdk::prelude::holo_hash::{ EntryHashB64 };
 use hdk::prelude::*;
 
 mod handlers;
@@ -35,15 +35,17 @@ pub fn react(input: ReactionInput) -> ExternResult<ReactionDetails> {
 
 // Deletes the link which was created via react()
 #[hdk_extern]
-pub fn unreact(header_hash: HeaderHashB64) -> ExternResult<HeaderHashB64> {
-    handlers::unreact(header_hash)
+pub fn unreact(input: ReactionInput) -> ExternResult<UnreactionDetails> {
+    handlers::unreact(input)
 }
 
 // Gets all the reactions for a given entry
 #[hdk_extern]
-pub fn get_reactions_for_entry(entry_hash: EntryHashB64) -> ExternResult<Vec<ReactionDetails>> {
-    handlers::get_reactions_for_entry(entry_hash)
+pub fn get_reactions_for_entry(input: GetReactionsForEntryInput) -> ExternResult<Vec<ReactionDetails>> {
+    handlers::get_reactions_for_entry(input)
 }
 
-
-
+#[hdk_extern]
+pub fn get_links_for_entry(entry_hash: EntryHashB64) -> ExternResult<Vec<Link>> {
+    Ok(get_links(entry_hash.into(), None)?)
+}

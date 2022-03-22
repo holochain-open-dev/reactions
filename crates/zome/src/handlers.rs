@@ -1,9 +1,7 @@
-use crate::{ ReactionDetails, ReactionInput};
-use hdk::prelude::holo_hash::{ HeaderHashB64, EntryHashB64};
+use crate::{ ReactionInput, ReactionDetails, UnreactionDetails, GetReactionsForEntryInput};
 use hdk::prelude::*;
 use std::convert::TryInto;
 
-// +++ Remark: moved struct definitions to ""../../types/src/lib.rs" as intended by the template
 
 pub fn react(input: ReactionInput) -> ExternResult<ReactionDetails> {
     let agent_pubkey = agent_info()?.agent_initial_pubkey;
@@ -20,19 +18,63 @@ pub fn react(input: ReactionInput) -> ExternResult<ReactionDetails> {
 }
 
 
-pub fn unreact(header_hash: HeaderHashB64) -> ExternResult<HeaderHashB64> {
-    let header_hash = delete_link(header_hash.into())?;
-    Ok(header_hash.into())
+
+// If there are multiple reactions of an author of the same type for the same entry, this
+// function just deletes one of them ignoring any time ordering
+pub fn unreact(input: ReactionInput) -> ExternResult<UnreactionDetails> {
+
+    let links = get_links(input.react_on.clone().into(), Some(LinkTag::new(input.reaction.clone())))?;
+
+    let agent_pub_key = agent_info()?.agent_initial_pubkey;
+
+    let mut authors_reactions = Vec::new();
+    for link in links {
+        if AgentPubKey::from(link.target.clone()) == agent_pub_key {
+            authors_reactions.push(link)
+        }
+    }
+
+    let invalidate_header_hash = authors_reactions[0].create_link_hash.clone();
+    // delete first link in array satisfying the conditions above
+    let delete_link_hash = delete_link(invalidate_header_hash.clone())?;
+
+    let output = UnreactionDetails {
+        author: agent_pub_key.into(),
+        reaction: input.reaction,
+        invalidated_header_hash: invalidate_header_hash.into(),
+        delete_link_hash: delete_link_hash.into(),
+    };
+
+    Ok(output)
 }
 
 
-pub fn get_reactions_for_entry(entry_hash: EntryHashB64) -> ExternResult<Vec<ReactionDetails>> {
+pub fn get_reactions_for_entry(input: GetReactionsForEntryInput) -> ExternResult<Vec<ReactionDetails>> {
 
-    let links = get_links(entry_hash.into(), None)?;
+    // filter by link tag a.k.a reaction type if provided
+    let link_tag = match input.reaction {
+        Some(reaction) => Some(LinkTag::new(reaction)),
+        None => None,
+    };
+
+    let links = get_links(input.entry_hash.clone().into(), link_tag)?;
+
+    // filter by author if author is provided
+    let mut filtered_links = Vec::new();
+    match input.author {
+        Some(author) => {
+            for link in links {
+                if AgentPubKey::from(link.target.clone()) == author.clone().into() {
+                    filtered_links.push(link);
+                }
+            }
+        },
+        None => { filtered_links = links }
+    }
 
     let mut converted_links: Vec<ReactionDetails> = Vec::new();
 
-    for link in links {
+    for link in filtered_links {
         let reaction_details = ReactionDetails {
             author: AgentPubKey::from(link.target).into(),
             reaction: tag_to_string(link.tag)?,
@@ -43,8 +85,30 @@ pub fn get_reactions_for_entry(entry_hash: EntryHashB64) -> ExternResult<Vec<Rea
         converted_links.push(reaction_details);
     }
 
+    info!("Zome output: {:?}", converted_links);
+
     Ok(converted_links)
 }
+
+
+
+
+// TODO
+
+// pub fn react_double_link()    <----  required for getting all the reactions of an author,
+//                                      for example listing all favorite posts of an author
+
+// pub fn unreact_double_link()
+
+
+// ATTENTION: If not filtered by reaction type, i.e. LinkTag, this function simply
+// returns all links tied to the author's public key, i.e. potentially also links
+// created by other zomes
+// pub fn get_reactions_of_author(input: GetReactionsOfAuthorInput) -> ExternResult<Vec<ReactionDetails>> {
+//     unimplemented!()
+// }
+
+
 
 
 

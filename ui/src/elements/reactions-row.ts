@@ -19,15 +19,14 @@ type GroupedReactions = Record<string, ReactionCount>;
 @customElement('reactions-row')
 export class ReactionsRow extends ScopedElementsMixin(LitElement) {
 
-
     @property({ type: String })
     entryHash!: EntryHashB64;
 
     @state()
     showPalette: boolean = false;
 
-    // @state()
-    // private _loading: boolean = true;
+    @state()
+    private _loading: boolean = true;
 
     @contextProvided({ context: reactionsStoreContext })
 
@@ -35,14 +34,13 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
     store!: ReactionsStore;
 
     private _reactionsForEntry = new StoreSubscriber(this, () =>
-    this.store?.reactionsForEntry(this.entryHash)
+    this.store?.reactionsForEntry({entryHash: this.entryHash})
     );
 
     async firstUpdated() {
-        console.log("I AM FIRST UPDATED");
-        await this.store.fetchReactionsForEntry(this.entryHash);
-        // this._loading = false;
-      }
+        await this.store.fetchAllReactionsForEntry(this.entryHash);
+        this._loading = false;
+    }
 
     /**
      * Groups all the reactions by reaction type, e.g. by emoji unicode character
@@ -80,10 +78,10 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
     }
 
     render() {
-        console.log("I AM RENDERED");
-        console.log(this.store);
-        console.log(this._reactionsForEntry);
-        console.log("+++ reactionsForEntry:", this.store?.reactionsForEntry(this.entryHash));
+        if (this._loading) {
+            return html``
+        }
+
         let orderedReactions = this.groupReactions(this._reactionsForEntry.value);
 
         return html`
