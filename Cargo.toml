@@ -3,6 +3,7 @@ members = [
   "crates/profiles",
   "crates/zome",
   "crates/types",
+  "crates/dummy",
 ]
 
 [profile.dev]

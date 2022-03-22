@@ -57,13 +57,10 @@
             new ContextProvider(this, profilesStoreContext, profilesStore);
 
             this.entryHash = await cellClient.callZome(
-            'reactions',
+            'dummy',
             'create_dummy_entry',
             'This dummy entry contains complete non-sense. It is solely for demo purposes.'
             );
-
-            console.log("EntryHash after zome call in index.html: ", this.entryHash);
-            console.log("EntryHash type after zome call in index.html: ", typeof this.entryHash);
 
 
             new ContextProvider(
@@ -73,10 +70,11 @@
             );
             this.loaded = true;
           }
-          debugger;
+
           render() {
+
             if (!this.loaded) return html`<span>Loading...</span>`;
-            console.log("EntryHash before rendering in index.html:", this.entryHash);
+
             return html`
               <div class="nonsense">This dummy entry contains complete non-sense. It is solely for demo purposes.</div>
 
@@ -84,6 +82,7 @@
                 <reactions-row .entryHash=${this.entryHash}></reactions-row>
                 <choosable-emoji-reaction .entryHash=${this.entryHash}></choosable-emoji-reaction>
               </div>
+              Some content below...
               `;
           }
 

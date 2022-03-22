@@ -8,6 +8,7 @@ import { Icon } from '@material/mwc-icon';
 
 import 'emoji-picker-element';
 
+import { StoreSubscriber } from 'lit-svelte-stores';
 import { ReactionsStore } from "../reactions-store";
 import { ReactionInput } from "../types";
 import { reactionsStoreContext } from "../context";
@@ -20,6 +21,9 @@ export class ChoosableEmojiReaction extends LitElement {
     @property({ type: String })
     entryHash!: EntryHashB64;
 
+    @state()
+    private _loading: boolean = true;
+
     @contextProvided({ context: reactionsStoreContext })
 
     @property({ type: Object })
@@ -28,25 +32,43 @@ export class ChoosableEmojiReaction extends LitElement {
     @state()
     showPalette: boolean = false;
 
+    private _reactionsForEntry = new StoreSubscriber(this, () =>
+    this.store?.reactionsForEntry({entryHash: this.entryHash})
+    );
+
+    async firstUpdated() {
+        await this.store.fetchAllReactionsForEntry(this.entryHash);
+        this._loading = false;
+    }
+
+    private _haveIReacted(reaction: string): boolean {
+        let reactions = this._reactionsForEntry.value;
+        return reactions
+            .filter((r) => r.reaction == reaction)
+            .some((r) => r.author == this.store.myAgentPubKey)
+    }
 
     private _togglePicker = () => {
         this.showPalette = !this.showPalette;
     }
 
     private _emojiReaction(e: CustomEvent) {
-        const reaction: string = e.detail.unicode;
-        let reactionInput: ReactionInput = {
-            reaction: reaction,
-            reactOn: this.entryHash,
+        if (!this._haveIReacted(e.detail.unicode)) {
+            const reaction: string = e.detail.unicode;
+            let reactionInput: ReactionInput = {
+                reaction: reaction,
+                reactOn: this.entryHash,
+            }
+            this.store.react(reactionInput)
         }
-        this.store.react(reactionInput)
         this._togglePicker();
     }
 
 
     render() {
-        // console.log(this.show);
-        // console.log((this.show? 'shown' : ''));
+        if (this._loading) {
+            return html``
+        }
 
         return html`
             <mwc-icon class="add-reaction" @click=${this._togglePicker} aria-label="Add reaction" style="--mdc-icon-size: 38px;">add_reaction</mwc-icon>
@@ -58,7 +80,7 @@ export class ChoosableEmojiReaction extends LitElement {
 
     static get scopedElements() {
         return {
-            'mwc-icon': Icon
+            'mwc-icon': Icon,
         };
     }
 
