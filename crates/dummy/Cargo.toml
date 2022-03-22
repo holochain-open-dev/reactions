@@ -1,0 +1,10 @@
+[package]
+name = "dummy"
+version = "0.0.1"
+edition = "2018"
+
+[lib]
+name = "dummy"
+crate-type = [ "cdylib", "rlib" ]
+
+hdk = {version = "0.0.121", features = ["encoding"]}

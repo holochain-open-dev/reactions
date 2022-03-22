@@ -10,7 +10,6 @@ use hdk::prelude::*;
 pub struct DummyEntry(String);
 
 
-#[hdk_extern]
 pub fn create_dummy_entry(dummy: DummyEntry) -> ExternResult<EntryHashB64> {
 
     create_entry(&dummy)?;

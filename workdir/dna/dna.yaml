@@ -9,3 +9,6 @@ zomes:
 
   - name: profiles
     bundled: ../../target/wasm32-unknown-unknown/release/profiles.wasm
+
+  - name: dummy
+    bundled: ../../target/wasm32-unknown-unknown/release/dummy.wasm

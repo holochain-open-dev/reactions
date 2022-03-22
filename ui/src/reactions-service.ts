@@ -10,9 +10,6 @@ export class ReactionsService {
    * @returns my reaction
    */
   async getReactionsForEntry(input: GetReactionsForEntryInput): Promise<Array<ReactionDetails>> {
-    console.log("INPUT FOR ZOME FUNCTION: ", input);
-    console.log("type of input:", typeof input);
-    console.log("type of entryHash: ", typeof input.entryHash);
     return this.callZome('get_reactions_for_entry', input);
   }
 

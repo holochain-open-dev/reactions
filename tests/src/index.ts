@@ -49,24 +49,6 @@ orchestrator.registerScenario("Create the dummy entry", async(s, t) => {
 orchestrator.run();
 orchestrator = new Orchestrator();
 
-// orchestrator.registerScenario("Create the dummy entry 2", async(s, t) => {
-//   // add players
-//   const [alice] = await s.players([conductorConfig]);
-//   // install happ to the conductor
-//   const [[alice_reactions]] = await alice.installAgentsHapps(installation);
-
-//   let alicePubkeyB64 = serializeHash(alice_reactions.agent);
-
-//   let entryHash = await alice_reactions.cells[0].call(
-//     zomeName,
-//     "create_dummy_entry",
-//     "Test entry content",
-//   );
-//   console.info("Created entry with hash", entryHash);
-//   t.ok(entryHash);
-// });
-
-// orchestrator.run();
 
 orchestrator.registerScenario("Create a dummy entry, react on it and get reactions of the entry", async (s, t) => {
   const [alice, bob] = await s.players([conductorConfig, conductorConfig]);
@@ -77,8 +59,10 @@ orchestrator.registerScenario("Create a dummy entry, react on it and get reactio
   const [[alice_reactions]] = await alice.installAgentsHapps(installation);
   const [[bob_reactions]] = await bob.installAgentsHapps(installation);
 
+  await s.shareAllNodes([alice, bob])
+
   let alicePubkeyB64 = serializeHash(alice_reactions.agent);
-  // let bobPubKeyB64 = serializeHash(bob_reactions.agent);
+  let bobPubKeyB64 = serializeHash(bob_reactions.agent);
 
   let entryHash = await alice_reactions.cells[0].call(
     zomeName,
@@ -89,9 +73,9 @@ orchestrator.registerScenario("Create a dummy entry, react on it and get reactio
   console.info("Created entry with hash", entryHash);
   t.ok(entryHash);
 
-  await sleep(500);
+  await sleep(5000);
 
-  let reactionDetails = await alice_reactions.cells[0].call(
+  let reactionDetails = await bob_reactions.cells[0].call(
     zomeName,
     "react",
     {
@@ -102,14 +86,14 @@ orchestrator.registerScenario("Create a dummy entry, react on it and get reactio
 
   console.info("reacted and got back ReactionDetails: ", reactionDetails);
   t.ok(reactionDetails);
-  t.equal(reactionDetails.author, alicePubkeyB64);
+  t.equal(reactionDetails.author, bobPubKeyB64);
   t.equal(reactionDetails.reaction, "😍");
 
 
 
   await sleep(2000);
 
-  let linksForEntry = await bob_reactions.cells[0].call(
+  let linksForEntry = await alice_reactions.cells[0].call(
     zomeName,
     "get_links_for_entry",
     entryHash,
@@ -119,19 +103,21 @@ orchestrator.registerScenario("Create a dummy entry, react on it and get reactio
   t.ok(linksForEntry);
 
 
-  // let reactionsForEntry = await bob_reactions.cells[0].call(
-  //   zomeName,
-  //   "get_reactions_for_entry",
-  //   {
-  //     entryHash: entryHash,
-  //   }
-  // );
+  let reactionsForEntry = await bob_reactions.cells[0].call(
+    zomeName,
+    "get_reactions_for_entry",
+    {
+      entryHash: entryHash,
+      reaction: null,
+      author: null,
+    }
+  );
 
-  // console.info("Reactions for entry:", reactionsForEntry);
-  // t.ok(reactionsForEntry);
-  // t.equal(typeof reactionsForEntry[entryHash].author, typeof alicePubkeyB64);
-  // t.equal(reactionsForEntry[entryHash].author, alicePubkeyB64);
-  // t.equal(reactionsForEntry[entryHash].reaction, "😍");
+  console.info("Reactions for entry:", reactionsForEntry);
+  t.ok(reactionsForEntry);
+  t.equal(typeof reactionsForEntry[0].author, typeof alicePubkeyB64);
+  t.equal(reactionsForEntry[0].author, bobPubKeyB64);
+  t.equal(reactionsForEntry[0].reaction, "😍");
 
 
 });

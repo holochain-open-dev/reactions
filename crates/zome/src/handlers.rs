@@ -5,7 +5,7 @@ use std::convert::TryInto;
 
 pub fn react(input: ReactionInput) -> ExternResult<ReactionDetails> {
     let agent_pubkey = agent_info()?.agent_initial_pubkey;
-    let header_hash = create_link(input.react_on.clone().into(), agent_pubkey.clone().into(), LinkTag::new(input.reaction.clone()))?;
+    let header_hash = create_link(input.react_on.clone().into(), agent_pubkey.clone().into(), link_tag(input.reaction.clone())?)?;
     let time = sys_time()?;
 
     let reaction_details = ReactionDetails {
@@ -23,7 +23,7 @@ pub fn react(input: ReactionInput) -> ExternResult<ReactionDetails> {
 // function just deletes one of them ignoring any time ordering
 pub fn unreact(input: ReactionInput) -> ExternResult<UnreactionDetails> {
 
-    let links = get_links(input.react_on.clone().into(), Some(LinkTag::new(input.reaction.clone())))?;
+    let links = get_links(input.react_on.clone().into(), Some(link_tag(input.reaction.clone())?))?;
 
     let agent_pub_key = agent_info()?.agent_initial_pubkey;
 
@@ -85,8 +85,6 @@ pub fn get_reactions_for_entry(input: GetReactionsForEntryInput) -> ExternResult
         converted_links.push(reaction_details);
     }
 
-    info!("Zome output: {:?}", converted_links);
-
     Ok(converted_links)
 }
 
@@ -119,10 +117,10 @@ pub fn get_reactions_for_entry(input: GetReactionsForEntryInput) -> ExternResult
 #[derive(Serialize, Deserialize, Debug, SerializedBytes)]
 struct StringLinkTag(String);
 
-// pub fn link_tag(tag: String) -> ExternResult<LinkTag> {
-//     let sb: SerializedBytes = StringLinkTag(tag).try_into()?;
-//     Ok(LinkTag(sb.bytes().clone()))
-// }
+pub fn link_tag(tag: String) -> ExternResult<LinkTag> {
+    let sb: SerializedBytes = StringLinkTag(tag).try_into()?;
+    Ok(LinkTag(sb.bytes().clone()))
+}
 pub fn tag_to_string(tag: LinkTag) -> ExternResult<String> {
     let bytes = SerializedBytes::from(UnsafeBytes::from(tag.0));
     let string_tag: StringLinkTag = bytes.try_into()?;

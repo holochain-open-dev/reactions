@@ -23,9 +23,6 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
     entryHash!: EntryHashB64;
 
     @state()
-    showPalette: boolean = false;
-
-    @state()
     private _loading: boolean = true;
 
     @contextProvided({ context: reactionsStoreContext })
@@ -64,6 +61,27 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
         return orderedReactions
     }
 
+    private _haveIReacted(reaction: string): boolean {
+        let reactions = this._reactionsForEntry.value;
+        return reactions
+            .filter((r) => r.reaction == reaction)
+            .some((r) => r.author == this.store.myAgentPubKey)
+    }
+
+    private _toggleReaction(reactionType: string) {
+        if (this._haveIReacted(reactionType)) {
+            this.store.unreact({
+                reaction: reactionType,
+                reactOn: this.entryHash,
+            })
+        } else {
+            this.store.react({
+                reaction: reactionType,
+                reactOn: this.entryHash,
+            })
+        }
+    }
+
     /**
      *
      * @param reactionType Actual reaction (e.g. Unicode emoji character)
@@ -73,11 +91,14 @@ export class ReactionsRow extends ScopedElementsMixin(LitElement) {
      */
     renderReactionType(reactionType: string, reactionCount: ReactionCount) {
         return html`
-            <span class="reaction-count">${reactionType} ${reactionCount.count}</span>
+            <span @click=${() => this._toggleReaction(reactionType)} class="reaction-count">${reactionType} ${reactionCount.count}</span>
         `;
     }
 
     render() {
+        console.log("I am rendered");
+        console.log("loading: ", this._loading);
+        console.log(this._reactionsForEntry.value);
         if (this._loading) {
             return html``
         }

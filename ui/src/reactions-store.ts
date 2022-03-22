@@ -112,19 +112,20 @@ export class ReactionsStore {
   }
 
   /**
-   * Delete reaction
+   * Undo reaction
    *
    *
-   * @param input
+   * @param input ReactionInput to undo, { reaction: string, reactOn: EntryHashB64 }
    */
   async unreact(input: ReactionInput): Promise<void> {
 
     const unreaction: UnreactionDetails = await(this._service.unreact(input)); // zome call
+    console.log("unreaction: ", unreaction);
 
     this._knownReactionsStore.update(reactions => {
-      reactions[input.reactOn] = reactions[input.reactOn].filter((r) => {
-        () => (r.reaction!=unreaction.invalidatedHeaderHash)
-      });
+      reactions[input.reactOn] = reactions[input.reactOn].filter((r) =>
+        r.createLinkHash!=unreaction.invalidatedHeaderHash
+      );
       return reactions;
     })
   }
