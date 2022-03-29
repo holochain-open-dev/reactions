@@ -27,7 +27,7 @@
           profilesStoreContext,
         } from '@holochain-open-dev/profiles';
 
-        import { ChoosableEmojiReaction, ReactionsRow, ReactionsStore, reactionsStoreContext } from '../dist';
+        import { IconReaction, ChoosableEmojiReaction, ReactionsRow, ReactionsStore, reactionsStoreContext } from '../dist';
 
         import { ContextProvider } from '@holochain-open-dev/context';
         import { HolochainClient } from '@holochain-open-dev/cell-client';
@@ -62,6 +62,12 @@
             'This dummy entry contains complete non-sense. It is solely for demo purposes.'
             );
 
+            this.entryHash2 = await cellClient.callZome(
+            'dummy',
+            'create_dummy_entry',
+            'This another dummy entry. It is here to show how the icon reactions work.'
+            );
+
 
             new ContextProvider(
               this,
@@ -77,12 +83,17 @@
 
             return html`
               <div class="nonsense">This dummy entry contains complete non-sense. It is solely for demo purposes.</div>
-
               <div class="row">
                 <reactions-row .entryHash=${this.entryHash}></reactions-row>
                 <choosable-emoji-reaction .entryHash=${this.entryHash}></choosable-emoji-reaction>
               </div>
-              Some content below...
+              <div></div>
+              <div class="nonsense">This another dummy entry. It is here to show how the icon reactions work.</div>
+              <div style="display: flex;">
+                <icon-reaction .entryHash=${this.entryHash2} onIcon="favorite" offIcon="favorite_border" reactionName="heart"></icon-reaction>
+                <icon-reaction .entryHash=${this.entryHash2} onIcon="star" offIcon="star_border"></icon-reaction>
+                <icon-reaction .entryHash=${this.entryHash2} onIcon="thumb_up_outlined" offIcon="thumb_up"></icon-reaction>
+              </div>
               `;
           }
 
@@ -104,6 +115,7 @@
             return {
               'choosable-emoji-reaction': ChoosableEmojiReaction,
               'reactions-row': ReactionsRow,
+              'icon-reaction': IconReaction,
             };
           }
         }
