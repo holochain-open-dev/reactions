@@ -5,9 +5,7 @@ import { EntryHashB64 } from '@holochain-open-dev/core-types';
 import { contextProvided } from '@holochain-open-dev/context';
 
 import { Icon } from '@scoped-elements/material-web';
-
-import 'emoji-picker-element';
-
+import {Picker} from 'emoji-picker-element';
 import { StoreSubscriber } from 'lit-svelte-stores';
 import { ReactionsStore } from '../reactions-store';
 import { ReactionInput } from '../types';
@@ -87,7 +85,7 @@ export class ChoosableEmojiReaction extends ScopedElementsMixin(LitElement) {
   static get scopedElements() {
     return {
       'mwc-icon': Icon,
-      'emoji-picker-element': customElements.get('emoji-picker-element'),
+      'emoji-picker': Picker,
     };
   }
 

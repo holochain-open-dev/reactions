@@ -1,3 +1,4 @@
+import '@webcomponents/scoped-custom-element-registry'
 export * from './types';
 export * from './context';
 export * from './elements/icon-reaction';

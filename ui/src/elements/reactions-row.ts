@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import { ScopedElementsMixin } from '@open-wc/scoped-elements';
 
 import { EntryHashB64 } from '@holochain-open-dev/core-types';
 
@@ -7,7 +8,6 @@ import { ReactionsStore } from '../reactions-store';
 import { ReactionDetails } from '../types';
 import { contextProvided } from '@holochain-open-dev/context';
 import { reactionsStoreContext } from '../context';
-import { ScopedElementsMixin } from '@open-wc/scoped-elements';
 import { StoreSubscriber } from 'lit-svelte-stores';
 import { sharedStyles } from './utils/shared-styles';
 
