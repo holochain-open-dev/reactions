@@ -1,126 +1,150 @@
 <!DOCTYPE html>
-  <html lang="en-GB">
-    <head>
-      <meta charset="utf-8" />
-      <link
-        href="https://fonts.googleapis.com/css?family=Material+Icons&display=block"
-        rel="stylesheet"
-      />
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Material+Icons&display=block"
+      rel="stylesheet"
+    />
 
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-      />
-    </head>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    />
+  </head>
 
-    <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css" />
 
-    <body>
-      <reactions-test-app></reactions-test-app>
+  <body>
+    <reactions-test-app></reactions-test-app>
 
-      <script type="module">
-        import {
-          ProfilesService,
-          ProfilesStore,
-          ProfilePrompt,
-          SearchAgent,
-          profilesStoreContext,
-        } from '@holochain-open-dev/profiles';
+    <script type="module">
+      import {
+        ProfilesService,
+        ProfilesStore,
+        ProfilePrompt,
+        SearchAgent,
+        profilesStoreContext,
+      } from '@holochain-open-dev/profiles';
 
-        import { IconReaction, ChoosableEmojiReaction, ReactionsRow, ReactionsStore, reactionsStoreContext } from '../dist';
+      import {
+        IconReaction,
+        ChoosableEmojiReaction,
+        ReactionsRow,
+        ReactionsStore,
+        reactionsStoreContext,
+      } from '../dist';
 
-        import { ContextProvider } from '@holochain-open-dev/context';
-        import { HolochainClient } from '@holochain-open-dev/cell-client';
-        import { ScopedElementsMixin } from '@open-wc/scoped-elements';
-        import { LitElement, html, css } from 'lit';
+      import { ContextProvider } from '@holochain-open-dev/context';
+      import { HolochainClient } from '@holochain-open-dev/cell-client';
+      import { ScopedElementsMixin } from '@open-wc/scoped-elements';
+      import { LitElement, html, css } from 'lit';
 
-        class ReactionsTestApp extends ScopedElementsMixin(LitElement) {
-          static get properties() {
-            return {
-              loaded: {
-                type: Boolean,
-              },
-            };
-          }
+      class ReactionsTestApp extends ScopedElementsMixin(LitElement) {
+        static get properties() {
+          return {
+            loaded: {
+              type: Boolean,
+            },
+          };
+        }
 
+        async firstUpdated() {
+          const client = await HolochainClient.connect(
+            `ws://localhost:${process.env.HC_PORT}`,
+            'test-app'
+          );
+          const cellClient = client.forCell(
+            client.cellDataByRoleId('reactions')
+          );
 
-          async firstUpdated() {
-            const client = await HolochainClient.connect(
-              `ws://localhost:${process.env.HC_PORT}`,
-              'test-app'
-            );
-            const cellClient = client.forCell(
-              client.cellDataByRoleId('reactions')
-            );
+          const profilesStore = new ProfilesStore(cellClient);
+          new ContextProvider(this, profilesStoreContext, profilesStore);
 
-            const profilesStore = new ProfilesStore(cellClient);
-            new ContextProvider(this, profilesStoreContext, profilesStore);
-
-            this.entryHash = await cellClient.callZome(
+          this.entryHash = await cellClient.callZome(
             'dummy',
             'create_dummy_entry',
             'This dummy entry contains complete non-sense. It is solely for demo purposes.'
-            );
+          );
 
-            this.entryHash2 = await cellClient.callZome(
+          this.entryHash2 = await cellClient.callZome(
             'dummy',
             'create_dummy_entry',
             'This another dummy entry. It is here to show how the icon reactions work.'
-            );
+          );
 
-
-            new ContextProvider(
-              this,
-              reactionsStoreContext,
-              new ReactionsStore(cellClient)
-            );
-            this.loaded = true;
-          }
-
-          render() {
-
-            if (!this.loaded) return html`<span>Loading...</span>`;
-
-            return html`
-              <div class="nonsense">This dummy entry contains complete non-sense. It is solely for demo purposes.</div>
-              <div class="row">
-                <reactions-row .entryHash=${this.entryHash}></reactions-row>
-                <choosable-emoji-reaction .entryHash=${this.entryHash}></choosable-emoji-reaction>
-              </div>
-              <div></div>
-              <div class="nonsense">This another dummy entry. It is here to show how the icon reactions work.</div>
-              <div style="display: flex;">
-                <icon-reaction .entryHash=${this.entryHash2} onIcon="favorite" offIcon="favorite_border" reactionName="heart"></icon-reaction>
-                <icon-reaction .entryHash=${this.entryHash2} onIcon="star" offIcon="star_border"></icon-reaction>
-                <icon-reaction .entryHash=${this.entryHash2} onIcon="thumb_up_outlined" offIcon="thumb_up"></icon-reaction>
-              </div>
-              `;
-          }
-
-          static styles = css`
-              .nonsense {
-                background: rgb(0,0,0,0.1);
-                border: 2px solid black;
-                border-radius: 10px;
-                max-width: 300px;
-                padding: 5px;
-                margin: 10px;
-              }
-              .row {
-                display: flex;
-              }
-          `
-
-          static get scopedElements() {
-            return {
-              'choosable-emoji-reaction': ChoosableEmojiReaction,
-              'reactions-row': ReactionsRow,
-              'icon-reaction': IconReaction,
-            };
-          }
+          new ContextProvider(
+            this,
+            reactionsStoreContext,
+            new ReactionsStore(cellClient)
+          );
+          this.loaded = true;
         }
 
-        customElements.define('reactions-test-app', ReactionsTestApp);
-      </script>
-    </body>
-  </html>
+        render() {
+          if (!this.loaded) return html`<span>Loading...</span>`;
+
+          return html`
+            <div class="nonsense">
+              This dummy entry contains complete non-sense. It is solely for
+              demo purposes.
+            </div>
+            <div class="row">
+              <reactions-row .entryHash=${this.entryHash}></reactions-row>
+              <choosable-emoji-reaction
+                .entryHash=${this.entryHash}
+              ></choosable-emoji-reaction>
+            </div>
+            <div></div>
+            <div class="nonsense">
+              This another dummy entry. It is here to show how the icon
+              reactions work.
+            </div>
+            <div style="display: flex;">
+              <icon-reaction
+                .entryHash=${this.entryHash2}
+                onIcon="favorite"
+                offIcon="favorite_border"
+                reactionName="heart"
+              ></icon-reaction>
+              <icon-reaction
+                .entryHash=${this.entryHash2}
+                onIcon="star"
+                offIcon="star_border"
+              ></icon-reaction>
+              <icon-reaction
+                .entryHash=${this.entryHash2}
+                onIcon="thumb_up_outlined"
+                offIcon="thumb_up"
+              ></icon-reaction>
+            </div>
+          `;
+        }
+
+        static styles = css`
+          .nonsense {
+            background: rgb(0, 0, 0, 0.1);
+            border: 2px solid black;
+            border-radius: 10px;
+            max-width: 300px;
+            padding: 5px;
+            margin: 10px;
+          }
+          .row {
+            display: flex;
+          }
+        `;
+
+        static get scopedElements() {
+          return {
+            'choosable-emoji-reaction': ChoosableEmojiReaction,
+            'reactions-row': ReactionsRow,
+            'icon-reaction': IconReaction,
+          };
+        }
+      }
+
+      customElements.define('reactions-test-app', ReactionsTestApp);
+    </script>
+  </body>
+</html>
