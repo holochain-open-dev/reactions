@@ -2,10 +2,9 @@ use crate::{ ReactionInput, ReactionDetails, UnreactionDetails, GetReactionsForE
 use hdk::prelude::*;
 use std::convert::TryInto;
 
-
 pub fn react(input: ReactionInput) -> ExternResult<ReactionDetails> {
     let agent_pubkey = agent_info()?.agent_initial_pubkey;
-    let header_hash = create_link(input.react_on.clone().into(), agent_pubkey.clone().into(), link_tag(input.reaction.clone())?)?;
+    let header_hash = create_link(input.react_on.clone().into(), agent_pubkey.clone().into(), LinkType::from(HdkLinkType::Any), link_tag(input.reaction.clone())?)?;
     let time = sys_time()?;
 
     let reaction_details = ReactionDetails {

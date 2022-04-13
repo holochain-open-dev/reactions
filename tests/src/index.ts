@@ -26,6 +26,7 @@ function serializeHash(hash) {
 }
 
 const zomeName = 'reactions';
+const dummyZomeName = 'dummy';
 
 let orchestrator = new Orchestrator();
 
@@ -38,7 +39,7 @@ orchestrator.registerScenario("Create the dummy entry", async(s, t) => {
   let alicePubkeyB64 = serializeHash(alice_reactions.agent);
 
   let entryHash = await alice_reactions.cells[0].call(
-    zomeName,
+    dummyZomeName,
     "create_dummy_entry",
     "Test entry content",
   );
@@ -65,7 +66,7 @@ orchestrator.registerScenario("Create a dummy entry, react on it and get reactio
   let bobPubKeyB64 = serializeHash(bob_reactions.agent);
 
   let entryHash = await alice_reactions.cells[0].call(
-    zomeName,
+    dummyZomeName,
     "create_dummy_entry",
     "Test entry content",
   );
@@ -93,14 +94,14 @@ orchestrator.registerScenario("Create a dummy entry, react on it and get reactio
 
   await sleep(2000);
 
-  let linksForEntry = await alice_reactions.cells[0].call(
-    zomeName,
-    "get_links_for_entry",
-    entryHash,
-  );
+  // let linksForEntry = await alice_reactions.cells[0].call(
+  //   zomeName,
+  //   "get_links_for_entry",
+  //   entryHash,
+  // );
 
-  console.info("LINKS FOR ENTRY:", linksForEntry);
-  t.ok(linksForEntry);
+  // console.info("LINKS FOR ENTRY:", linksForEntry);
+  // t.ok(linksForEntry);
 
 
   let reactionsForEntry = await bob_reactions.cells[0].call(
